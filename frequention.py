@@ -1,11 +1,12 @@
 NAME_OF_DICT = "Czech.3-2-5.dic"
+DICT_ENCODING = "cp1250"
 
 #Funkce vrati slovnik listu pismen ceske abecedy serazenych podle cetnosti.
-def find_freq_of_two_letters(dict):
-    dict_file = open(dict,"r")
+def find_freq_of_two_letters(dict,encoding):
+    dict_file = open(dict,"r",encoding=encoding)
     freq = {}
     for line in dict_file:
-        word = line.decode("cp1250").strip()
+        word = line.strip()
         for i in range(len(word)-1):
             if word[i] in freq:
                 if word[i+1] in freq[word[i]]:
@@ -20,11 +21,11 @@ def find_freq_of_two_letters(dict):
     return freq
 
 #Funkce vrati list pismen ceske abecedy serazenych podle cetnosti.
-def find_basic_freq(dict):
-    dict_file = open(dict, "r")
+def find_basic_freq(dict,encoding):
+    dict_file = open(dict, "r",encoding=encoding)
     freq = {}
     for line in dict_file:
-        word = line.decode("cp1250").strip()
+        word = line.strip()
         for i in range(len(word)):
             if word[i] in freq:
                 freq[word[i]] += 1

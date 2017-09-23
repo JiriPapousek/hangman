@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import division
 import frequention
 import random
 
-
-basic_freq = frequention.find_basic_freq(frequention.NAME_OF_DICT)
-dict_file = open(frequention.NAME_OF_DICT, "r")
+basic_freq = frequention.find_basic_freq(frequention.NAME_OF_DICT,frequention.DICT_ENCODING)
+dict_file = open(frequention.NAME_OF_DICT, "r",encoding=frequention.DICT_ENCODING)
 words = dict_file.readlines()
 
 #Strategie nahodneho tipovani znaku
@@ -38,17 +35,17 @@ def play_a_game(strategy, word):
     guesses = []
     state_of_play = ""
     for i in range(len(word)):
-        state_of_play = state_of_play+" "
-    print state_of_play
+        state_of_play = state_of_play + " "
+    print(state_of_play)
     while state_of_play != word:
         letter = strategy.play_round(state_of_play,guesses)
         guesses.append(letter)
-        print letter
+        print(letter)
         guess_success = False
         for i in range(len(word)):
             if letter == word[i]:
                 state_of_play = state_of_play[0:i] + letter + state_of_play[i+1:]
-                print "Stav hry:" + state_of_play
+                print("Stav hry: " + state_of_play)
                 guess_success = True
         if not guess_success:
             strategy.made_mistake()
@@ -58,18 +55,18 @@ rand_strat = random_strategy()
 simple_strat = simple_freq_strategy()
 
 for i in range(300):
-    print "----------------------------"
-    print u"Hra č.", i
-    print "----------------------------"
+    print("----------------------------")
+    print("Hra č. ", i)
+    print("----------------------------")
 
     #Vylosovani nahodneho slova ze slovniku
     i = random.randint(0,len(words)-1)
-    word = words[i].decode("cp1250").strip()
+    word = words[i].strip()
 
     play_a_game(rand_strat,word)
     "------------------------"
     play_a_game(simple_strat,word)
 
 #Vypise prumerny pocet chybne tipnutych pismen u jednotlivych strategii.
-print u"Strategie náhodně losovaných písmen:", rand_strat.mistakes/300
-print u"Strategie podle frekvence písmen v jazyce:", simple_strat.mistakes/300
+print("Strategie náhodně losovaných písmen: ", rand_strat.mistakes/300)
+print("Strategie podle frekvence písmen v jazyce: ", simple_strat.mistakes/300)

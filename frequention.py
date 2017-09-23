@@ -33,13 +33,3 @@ def find_basic_freq(dict,encoding):
                 freq[word[i]] = 1
     sorted_freq = sorted(freq, key=freq.get)[::-1]
     return sorted_freq
-
-#Seznam pismen ceske abecedy serazenych podle cetnosti.
-#basic_freq = find_basic_freq(NAME_OF_DICT)
-#for i in basic_freq:
-#    print i
-
-#two_letters_freq = find_freq_of_two_letters(NAME_OF_DICT)
-#for i in two_letters_freq:
-#    print i + ": "
-#    print two_letters_freq[i]

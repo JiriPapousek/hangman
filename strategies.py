@@ -30,6 +30,30 @@ class simple_freq_strategy:
     def made_mistake(self):
         self.mistakes += 1
 
+#Strategie postupně porovnávající stav hry s každým slovem ve slovníku,
+#dokud nenajde odpovídající slovo. Následně zahraje poslední ještě
+#nezahrané možné písmeno ve slově.
+class dict_strategy:
+    mistakes = 0
+
+    def play_round(self,state_of_play,guesses):
+        for word in words:
+            word = word.strip()
+            if len(word)==len(state_of_play):
+                triable = True
+                letter = " "
+                for i in range(len(word)):
+                    if (word[i]!=state_of_play[i]) and (state_of_play[i]!=" "):
+                        triable = False
+                        break
+                    elif (state_of_play[i]==" ") and (word[i] not in guesses):
+                        letter = word[i]
+                if (triable) and (letter!=" "):
+                    return letter
+
+    def made_mistake(self):
+        self.mistakes += 1
+
 #Fce odehraje jednu hru obesence na zaklade vstupniho slova a strategie.
 def play_a_game(strategy, word):
     guesses = []

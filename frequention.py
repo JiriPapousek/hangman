@@ -33,3 +33,5 @@ def find_basic_freq(dict,encoding):
                 freq[word[i]] = 1
     sorted_freq = sorted(freq, key=freq.get)[::-1]
     return sorted_freq
+
+#print (find_freq_of_two_letters(NAME_OF_DICT,DICT_ENCODING))

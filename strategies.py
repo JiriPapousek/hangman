@@ -5,8 +5,11 @@ basic_freq = frequention.find_basic_freq(frequention.NAME_OF_DICT,frequention.DI
 dict_file = open(frequention.NAME_OF_DICT, "r",encoding=frequention.DICT_ENCODING)
 words = dict_file.readlines()
 
-#Strategie nahodneho tipovani znaku
 class RandomStrategy:
+"""
+Strategy that plays a random character (from characters used
+in the dictionary).
+"""
     def __init__(self):
         self.mistakes = 0
         self.short_name = "random"
@@ -22,8 +25,10 @@ class RandomStrategy:
     def made_mistake(self):
         self.mistakes += 1
 
-#Strategie zalozená na frekvenci pismen v ceskem jazyce
 class SimpleFreqStrategy:
+"""
+Strategy based on letters frequency in the dictionary.
+"""
     def __init__(self):
         self.mistakes = 0
         self.short_name = "freq_letters"
@@ -34,11 +39,12 @@ class SimpleFreqStrategy:
     def made_mistake(self):
         self.mistakes += 1
 
-#Strategie postupně porovnávající stav hry s každým slovem ve slovníku,
-#dokud nenajde odpovídající slovo. Následně zahraje poslední ještě
-#nezahrané možné písmeno ve slově.
 class DictStrategy:
-
+"""
+Strategy gradually comparing the state of game with every word in the
+dictionary, until a matching word is not found. Than it plays last
+letter in this word, which hasn't been played yet.
+"""
     def __init__(self):
         self.mistakes = 0
         self.short_name = "dict_strat"
@@ -62,7 +68,10 @@ class DictStrategy:
         self.mistakes += 1
 
 class ImprovedDictStrategy:
-
+"""
+Strategy makes a frequency of letters used in words matching to the
+state of game. Than it plays the most frequented letter.
+"""
     def __init__(self):
         self.mistakes = 0
         self.short_name = "improved_dict"
@@ -89,7 +98,11 @@ class ImprovedDictStrategy:
     def made_mistake(self):
         self.mistakes += 1
 
-class FinaDictStrategy:
+class FinalDictStrategy:
+"""
+Strategy playes the letter, which is used in the most words matching
+to the state of game.
+"""
     def __init__(self):
         self.mistakes = 0
         self.short_name = "final_dict"
@@ -118,8 +131,10 @@ class FinaDictStrategy:
     def made_mistake(self):
         self.mistakes += 1
 
-#Fce odehraje jednu hru obesence na zaklade vstupniho slova a strategie.
 def play_a_game(strategy, word):
+"""
+Function plays a game of hangman using a word and strategy as an input.
+"""
     guesses = []
     state_of_play = ""
     for i in range(len(word)):

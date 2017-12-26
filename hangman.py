@@ -4,44 +4,49 @@ import random
 import numpy
 import matplotlib.pyplot as plt
 
-NUMBER_OF_GAMES = 50
+def test_strategies(number_of_games, name_of_dict, dict_encoding, strat_names):
+    dict_file = open(name_of_dict, "r",encoding=dict_encoding)
+    words = dict_file.readlines()
 
-dict_file = open(frequention.NAME_OF_DICT, "r",encoding=frequention.DICT_ENCODING)
-words = dict_file.readlines()
+    strats = []
+    for strat_name in strat_names:
+        strats.append(strat_name(name_of_dict, dict_encoding))
 
-strats = []
-strats.append(strategies.RandomStrategy())
-strats.append(strategies.SimpleFreqStrategy())
-strats.append(strategies.DictStrategy())
-strats.append(strategies.ImprovedDictStrategy())
-strats.append(strategies.FinalDictStrategy())
-
-#Plays specific number of games on all strategies.
-for i in range(NUMBER_OF_GAMES):
-    print("----------------------------")
-    print("Hra č. ", i)
-    print("----------------------------")
-
-    #Picks a random word from the dictionary.
-    i = random.randint(0,len(words)-1)
-    word = words[i].strip()
-
-    for strat in strats:
-        strategies.play_a_game(strat,word)
+    #Plays specific number of games on all strategies.
+    for i in range(number_of_games):
+        print("----------------------------")
+        print("Hra č. ", i)
         print("----------------------------")
 
-score = []
-names = []
-for strat in strats:
-    score.append(strat.mistakes/NUMBER_OF_GAMES)
-    names.append(strat.short_name)
+        #Picks a random word from the dictionary.
+        i = random.randint(0,len(words)-1)
+        word = words[i].strip()
 
-#Prints out average number of wrong played letters by different trategies.
-for i in range(len(strats)):
-    print(names[i]+": "+str(score[i]))
+        for strat in strats:
+            strategies.play_a_game(strat,word)
+            print("----------------------------")
 
-#Draws a graph of results.
-plt.barh(numpy.arange(len(score)),score,align="center")
-plt.yticks(numpy.arange(len(score)),names)
-plt.xlabel('Number of mistakes')
-plt.show()
+    score = []
+    names = []
+    for strat in strats:
+        score.append(strat.mistakes/number_of_games)
+        names.append(strat.short_name)
+
+    #Prints out average number of wrong played letters by different trategies.
+    for i in range(len(strats)):
+        print(names[i]+": "+str(score[i]))
+
+    #Draws a graph of results.
+    plt.barh(numpy.arange(len(score)),score,align="center")
+    plt.yticks(numpy.arange(len(score)),names)
+    plt.xlabel('Number of mistakes')
+    plt.tight_layout()
+    plt.show()
+
+strat_list = [strategies.RandomStrategy,
+              strategies.SimpleFreqStrategy,
+              strategies.ImprovedFreqStrategy,
+              strategies.DictStrategy,
+              strategies.SplitStrategy]
+
+test_strategies(10, "Czech.3-2-5.dic", "cp1250", strat_list)

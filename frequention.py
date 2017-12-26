@@ -1,11 +1,8 @@
-NAME_OF_DICT = "Czech.3-2-5.dic"
-DICT_ENCODING = "cp1250"
-
 def find_basic_freq(dict,encoding):
-"""
-Function returns list of characters sorted by their frequention
-in dictionary file.
-"""
+    """
+    Function returns list of characters sorted by their frequention
+    in dictionary file.
+    """
     dict_file = open(dict, "r",encoding=encoding)
     freq = {}
     for line in dict_file:
@@ -19,10 +16,10 @@ in dictionary file.
     return sorted_freq
 
 def find_freq_of_two_letters(dict,encoding):
-"""
-Function returns dictionary of lists of characters sorted by their
-frequention in dictionary file.
-"""
+    """
+    Function returns dictionary of lists of characters sorted by their
+    frequention in dictionary file.
+    """
     dict_file = open(dict,"r",encoding=encoding)
     freq = {}
     for line in dict_file:

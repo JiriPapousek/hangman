@@ -1,140 +1,139 @@
 import frequention
 import random
+import math
 
-basic_freq = frequention.find_basic_freq(frequention.NAME_OF_DICT,frequention.DICT_ENCODING)
-dict_file = open(frequention.NAME_OF_DICT, "r",encoding=frequention.DICT_ENCODING)
-words = dict_file.readlines()
-
-class RandomStrategy:
-"""
-Strategy that plays a random character (from characters used
-in the dictionary).
-"""
+class Strategy:
+    """
+    Template for general strategy.
+    """
     def __init__(self):
         self.mistakes = 0
+
+    def made_mistake(self):
+        self.mistakes += 1
+
+class RandomStrategy(Strategy):
+    """
+    Strategy that plays a random character (from characters used
+    in the dictionary).
+    """
+    def __init__(self, dict_name, dict_encoding):
+        self.mistakes = 0
+        self.basic_freq = frequention.find_basic_freq(dict_name, dict_encoding)
         self.short_name = "random"
 
     def play_round(self,state_of_play,guesses):
         not_played_yet = False
         while not not_played_yet:
-            i = random.randint(0,len(basic_freq)-1)
-            if basic_freq[i] not in guesses:
+            i = random.randint(0,len(self.basic_freq)-1)
+            if self.basic_freq[i] not in guesses:
                 not_played_yet = True
-        return basic_freq[i]
+                return self.basic_freq[i]
 
-    def made_mistake(self):
-        self.mistakes += 1
-
-class SimpleFreqStrategy:
-"""
-Strategy based on letters frequency in the dictionary.
-"""
-    def __init__(self):
+class SimpleFreqStrategy(Strategy):
+    """
+    Strategy based on letters frequency in the dictionary.
+    """
+    def __init__(self, dict_name, dict_encoding):
         self.mistakes = 0
+        self.basic_freq = frequention.find_basic_freq(dict_name, dict_encoding)
         self.short_name = "freq_letters"
 
-    def play_round(self,state_of_play,guesses):
-        return basic_freq[len(guesses)]
+    def play_round(self, state_of_play, guesses):
+        return self.basic_freq[len(guesses)]
 
-    def made_mistake(self):
-        self.mistakes += 1
-
-class DictStrategy:
-"""
-Strategy gradually comparing the state of game with every word in the
-dictionary, until a matching word is not found. Than it plays last
-letter in this word, which hasn't been played yet.
-"""
-    def __init__(self):
+class ImprovedFreqStrategy(Strategy):
+    """
+    This strategy is similar to SimpleFreqStrategy, but it uses frequency
+    of two neighbour letters whenever it is possible instead of general
+    letter frequency.
+    """
+    def __init__(self, dict_name, dict_encoding):
         self.mistakes = 0
+        self.basic_freq = frequention.find_basic_freq(dict_name, dict_encoding)
+        self.improved_freq = frequention.find_freq_of_two_letters(dict_name, dict_encoding)
+        self.short_name = "improved_freq_letters"
+
+    def play_round(self, state_of_play, guesses):
+        for i in range(len(state_of_play)-1):
+            if state_of_play[i]!=" " and state_of_play[i+1]==" ":
+                for x in self.improved_freq[state_of_play[i]]:
+                    if x not in guesses:
+                        return x
+        for i in self.basic_freq:
+            if i not in guesses:
+                return i
+
+def triable(state_of_play, word, guesses):
+    if len(state_of_play) != len(word):
+        return False
+    for i in range(len(word)):
+        if state_of_play[i]!=" " and state_of_play[i]!=word[i]:
+            return False
+        if state_of_play[i]==" " and word[i] in guesses:
+            return False
+    return True
+
+class DictStrategy(Strategy):
+    """
+    Strategy gradually comparing the state of game with every word in the
+    dictionary, until a matching word is not found. Than it plays last
+    letter in this word, which hasn't been played yet.
+    """
+    def __init__(self, dict_name, dict_encoding):
+        self.mistakes = 0
+        dict_file = open(dict_name, "r", encoding=dict_encoding)
+        self.words = dict_file.readlines()
+        dict_file.close()
         self.short_name = "dict_strat"
 
     def play_round(self,state_of_play,guesses):
-        for word in words:
+        for word in self.words:
             word = word.strip()
-            if len(word)==len(state_of_play):
-                triable = True
-                letter = " "
-                for i in range(len(word)):
-                    if (word[i]!=state_of_play[i]) and (state_of_play[i]!=" "):
-                        triable = False
-                        break
-                    elif (state_of_play[i]==" ") and (word[i] not in guesses):
-                        letter = word[i]
-                if (triable) and (letter!=" "):
-                    return letter
+            if triable(state_of_play, word, guesses):
+                for i in range(len(state_of_play)):
+                    if state_of_play[i]==" ":
+                        return word[i]
 
-    def made_mistake(self):
-        self.mistakes += 1
-
-class ImprovedDictStrategy:
-"""
-Strategy makes a frequency of letters used in words matching to the
-state of game. Than it plays the most frequented letter.
-"""
-    def __init__(self):
+class SplitStrategy(Strategy):
+    """
+    The strategy using dictionary - except it does not return the best
+    possible candidate at the moment, but the candidate that has half to
+    half ratio of success.
+    """
+    def __init__(self, dict_name, dict_encoding):
         self.mistakes = 0
-        self.short_name = "improved_dict"
+        dict_file = open(dict_name, "r", encoding=dict_encoding)
+        self.words = dict_file.readlines()
+        dict_file.close()
+        self.short_name = "split_strat"
 
-    def play_round(self,state_of_play,guesses):
-        right_letters_freq = {}
-        for word in words:
+    def play_round(self, state_of_play, guesses):
+        freq = {}
+        total = 0
+        for word in self.words:
             word = word.strip()
-            if len(word)==len(state_of_play):
-                triable = True
-                letter = " "
-                for i in range(len(word)):
-                    if (word[i]!=state_of_play[i]) and (state_of_play[i]!=" "):
-                        triable = False
-                        break
-                    elif (state_of_play[i]==" ") and (word[i] not in guesses):
-                        if word[i] in right_letters_freq:
-                            right_letters_freq[word[i]] += 1
-                        else:
-                            right_letters_freq[word[i]] = 1
-        return max(right_letters_freq, key=right_letters_freq.get)
-
-
-    def made_mistake(self):
-        self.mistakes += 1
-
-class FinalDictStrategy:
-"""
-Strategy playes the letter, which is used in the most words matching
-to the state of game.
-"""
-    def __init__(self):
-        self.mistakes = 0
-        self.short_name = "final_dict"
-
-    def play_round(self,state_of_play,guesses):
-        right_letters_freq = {}
-        for word in words:
-            word = word.strip()
-            if len(word)==len(state_of_play):
-                triable = True
-                counted_letters = []
-                for i in range(len(word)):
-                    if (word[i]!=state_of_play[i]) and (state_of_play[i]!=" "):
-                        triable = False
-                        break
-                    elif (state_of_play[i]==" ") and (word[i] not in guesses):
-                        if word[i] in right_letters_freq:
-                            if word[i] not in counted_letters:
-                                right_letters_freq[word[i]] += 1
-                                counted_letters.append(word[i])
-                        else:
-                            right_letters_freq[word[i]] = 1
-        return max(right_letters_freq, key=right_letters_freq.get)
-
-
-    def made_mistake(self):
-        self.mistakes += 1
+            if triable(state_of_play, word, guesses):
+                total += 1
+                letters_in_word = []
+                for i in word:
+                    if i not in letters_in_word and i not in guesses:
+                        letters_in_word.append(i)
+                for i in letters_in_word:
+                    candidate = i
+                    if i in freq:
+                        freq[i] += 1
+                    else:
+                        freq[i] = 1
+        for letter in freq:
+            if math.fabs(freq[letter]-total/2)<math.fabs(freq[candidate]-total/2):
+                candidate = letter
+        return candidate
 
 def play_a_game(strategy, word):
-"""
-Function plays a game of hangman using a word and strategy as an input.
-"""
+    """
+    Function plays a game of hangman using a word and strategy as an input.
+    """
     guesses = []
     state_of_play = ""
     for i in range(len(word)):
@@ -148,7 +147,7 @@ Function plays a game of hangman using a word and strategy as an input.
         for i in range(len(word)):
             if letter == word[i]:
                 state_of_play = state_of_play[0:i] + letter + state_of_play[i+1:]
-                print("Stav hry: " + state_of_play)
+                print("State of game: " + state_of_play)
                 guess_success = True
         if not guess_success:
             strategy.made_mistake()

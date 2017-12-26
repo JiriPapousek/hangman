@@ -3,6 +3,7 @@ import frequention
 import random
 import numpy
 import matplotlib.pyplot as plt
+import sys
 
 def test_strategies(number_of_games, name_of_dict, dict_encoding, strat_names):
     dict_file = open(name_of_dict, "r",encoding=dict_encoding)
@@ -49,4 +50,4 @@ strat_list = [strategies.RandomStrategy,
               strategies.DictStrategy,
               strategies.SplitStrategy]
 
-test_strategies(10, "Czech.3-2-5.dic", "cp1250", strat_list)
+test_strategies(int(sys.argv[1]), sys.argv[2], sys.argv[3], strat_list)

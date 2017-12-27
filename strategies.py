@@ -65,6 +65,10 @@ class ImprovedFreqStrategy(Strategy):
                 return i
 
 def triable(state_of_play, word, guesses):
+    """
+    Tests the word, if it actually fits the current state of play and can
+    potentially be the result.
+    """
     if len(state_of_play) != len(word):
         return False
     for i in range(len(word)):

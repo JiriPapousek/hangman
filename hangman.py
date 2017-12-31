@@ -2,6 +2,7 @@ import strategies
 import frequention
 import random
 import numpy
+import pylab
 import matplotlib.pyplot as plt
 import sys
 
@@ -16,7 +17,7 @@ def test_strategies(number_of_games, name_of_dict, dict_encoding, strat_names):
     #Plays specific number of games on all strategies.
     for i in range(number_of_games):
         print("----------------------------")
-        print("Hra č. ", i)
+        print("Game number ", i)
         print("----------------------------")
 
         #Picks a random word from the dictionary.
@@ -42,6 +43,7 @@ def test_strategies(number_of_games, name_of_dict, dict_encoding, strat_names):
     plt.yticks(numpy.arange(len(score)),names)
     plt.xlabel('Number of mistakes')
     plt.tight_layout()
+    pylab.savefig("results.png")
     plt.show()
 
 strat_list = [strategies.RandomStrategy,
